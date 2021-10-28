@@ -35,13 +35,39 @@ async function run() {
       res.send(cursor);
     });
 
+    // GET single services
+    app.get("/details/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await eventCollections.findOne(query);
+      res.send(result);
+    });
+    // Update event
+    app.put("/update/:id", async (req, res) => {
+      const id = req.params.id;
+      const updateData = req.body;
+      const options = { upsert: true };
+      const query = { _id: ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          title: updateData.title,
+        },
+      };
+      const result = await eventCollections.updateOne(
+        query,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
+
     // DELETE single service
     app.delete("/event/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await eventCollections.deleteOne(query);
       res.json(result);
-      console.log(result)
+      console.log(result);
     });
   } finally {
     // await client?.close();
